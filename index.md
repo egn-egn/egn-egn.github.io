@@ -1,16 +1,20 @@
-## Why? // Porque?
+## Why? // Por que?
+
+By default, Wazuh send his alerts via e-mail, and has some ready to go integrations, [Slack](https://documentation.wazuh.com/current/proof-of-concept-guide/poc-integrate-slack.html) is one of them.
+In my case, i use Wazuh to monitor my home network and discord is an app that i'm using all day, it's the perfect place for me see the alerts. But it is possible to create a custom-integration to send alerts to pratically any place that has a webhook or any other form of receiving data via POST requests. Like Teams for example :).
 
 Por default, o Wazuh envia seus alertas via e-mail e atualmente, na versão 4.3.0, tem integrações prontas, uma delas é o [Slack](https://documentation.wazuh.com/current/proof-of-concept-guide/poc-integrate-slack.html).
 No meu caso, eu uso o Wazuh para monitorar meu ambiente pessoal e como o discord é uma aplicação que uso praticamente o dia inteiro, nada mais justo do que enviar os alertas para ele. Mas é possivel criar uma integração para enviar alertas para qualquer lugar/serviço que tenha um webhook, como o Teams por exemplo.
 
+### Creating a webhook // Criando um webhook
 
-You can use the [editor on GitHub](https://github.com/egn-egn/egn-egn.github.io/edit/main/index.md) to maintain and preview the content for your website in Markdown files.
+First thing to do is create a discord webhhok
+```markdown
+- Open your server settings // Abra as configurações de seu servidor
+- On "Integrations", click on "webhooks" and generate one. // Na aba "Integrations", clica no "webhooks" para gerar um
+- Save the webhook link for now // Guarde o link do webhook por enquanto
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+```
 
 ```markdown
 Syntax highlighted code block
