@@ -1,4 +1,8 @@
-## Welcome to GitHub Pages
+## Why? // Porque?
+
+Por default, o Wazuh envia seus alertas via e-mail e atualmente, na versão 4.3.0, tem integrações prontas, uma delas é o [Slack](https://documentation.wazuh.com/current/proof-of-concept-guide/poc-integrate-slack.html).
+No meu caso, eu uso o Wazuh para monitorar meu ambiente pessoal e como o discord é uma aplicação que uso praticamente o dia inteiro, nada mais justo do que enviar os alertas para ele. Mas é possivel criar uma integração para enviar alertas para qualquer lugar/serviço que tenha um webhook, como o Teams por exemplo.
+
 
 You can use the [editor on GitHub](https://github.com/egn-egn/egn-egn.github.io/edit/main/index.md) to maintain and preview the content for your website in Markdown files.
 
