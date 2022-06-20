@@ -16,10 +16,9 @@ The first thing to do is create a discord webhhok on **your** server chat
 - Save the webhook link for now
 ```
 Enter in the integrations folder of Wazuh. 
-```markdown
 **cd /var/ossec/integrations** 
 ![Image](/docs/assets/images/02.png)
-```
+
 ```markdown
 Syntax highlighted code block
 
