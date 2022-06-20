@@ -56,9 +56,9 @@ This block of xml is what activates the integration, you will need to insert thi
 ``` 
 ![](/docs/assets/images/02.png)
 
--The tag **name** in the line 354 is where we define the name of the script that will launch the python script.
--The tag **hook** is where you will need to place your webhook url.
--In the line 357 i can control what will trigger the integration, in my case is any Wazuh alert that is equal or greater than 07.
+- The tag **name** in the line 354 is where we define the name of the script that will launch the python script.
+- The tag **hook** is where you will need to place your webhook url.
+- In the line 357 i can control what will trigger the integration, in my case is any Wazuh alert that is equal or greater than 07.
 
 You can use the following options to trigger the alert:
 ```markdown
