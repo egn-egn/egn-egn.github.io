@@ -26,9 +26,10 @@ cd /var/ossec/integrations
 ```
 ![](/docs/assets/images/01.png)
 
-As you can see that are two slack scritps, one in bash and the other in python, the reason for that is that the bash one will work like a launcher for the python script.
+As you can see, that are two slack scritps, one is in bash and the other in python, the reason for that is that the bash one will work like a launcher for the python script.
 
-Copy the both of them and name it to **custom-discord**
+Copy both of them and name it to **custom-discord**
+- all custom integrations scripts names need to start with **custom-**
 ```markdown
 cp slack custom-discord
 cp slack.py custom-discord.py
@@ -53,13 +54,16 @@ This block of xml is what activates the integration, you will need to insert thi
   </integration>
 ``` 
 ![](/docs/assets/images/02.png)
-The tag <name> will call the trigger script that will launch the python script. 
+
+The tag **name** in the line 354 will call the trigger script that will launch the python script.
+The tag **hook** is where you will need to place your webhook url.
 In the line 357 i can control what will trigger the integration, in my case is any Wazuh alert that is equal or greater than 07.
+
 You can use the following options to trigger the alert:
 ```markdown
-- <group>suricata,sysmon</group> Only the rules of the group suricata and sysmon will trigger the integration.
-- <level>12</level> Only rules greate or equal to 12 will trigger.
-- <rule_id>1299,1300</rule_id> Only this rules will trigger.
+<group>suricata,sysmon</group> Only the rules of the group suricata and sysmon will trigger the integration.
+<level>12</level> Only rules greate or equal to 12 will trigger.
+<rule_id>1299,1300</rule_id> Only this rules will trigger.
 ```
 
 ```
