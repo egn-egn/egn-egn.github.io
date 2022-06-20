@@ -4,25 +4,22 @@ I want to monitor my home network with Wazuh and Suricata working together, and 
 I could use the Wazuh integrations that are ready, like [Slack](https://documentation.wazuh.com/current/proof-of-concept-guide/poc-integrate-slack.html), but Discord is a tool that I use daily and is perfect to use as an example on how to build a custom integration with Wazuh.
 it is possible to create a custom-integration to send alerts to practically any place that has a webhook or any other form of receiving data via POST requests. Like Teams for example.
 
-Eu quero monitorar minha rede doméstica com Wazuh e Suricata trabalhando juntos e também quero uma maneira fácil de ver os alertas que são gerados por Wazuh.
-Uma das opções seria usar as integrações prontas do Wazuh, como o [Slack](https://documentation.wazuh.com/current/proof-of-concept-guide/poc-integrate-slack.html) por exemplo, mas Discord é uma ferramenta que uso diariamente e é perfeita para usar como exemplo de como construir uma integração custom com Wazuh.
-É possível criar uma integração custom para enviar alertas para praticamente qualquer lugar que tenha um webhook ou qualquer outra forma de recebimento de dados via POST. Por exemplo, o Teams.
 
-### Creating a webhook // Criando um webhook
+I'm assuming that you already have Wazuh instaled and working, in this setup i'm working with a "All in one" installation in my kali vm, you can follow with any Linux distribution you like. If you are working with Wazuh distribud in nodes, you will have to configure the integration on all the node managers too.
 
-First thing to do is create a discord webhhok on **your** server chat
-Primeira coisa a se fazer é criar um webhook no chat de **seu** servidor de Discord
+### Creating a webhook
+
+The first thing to do is create a discord webhhok on **your** server chat
 ```markdown
 - Open your server settings
 - On "Integrations", click on "webhooks" to generate one
 - Save the webhook link for now
-
-- Abra as configurações de seu servidor
-- Na aba "Integrations", clique no campo "webhooks"
-- Guarde o link do webhook por enquanto
-
 ```
-
+Enter in the integrations folder of Wazuh. 
+```markdown
+**cd /var/ossec/integrations** 
+![Image](/docs/assets/images/02.png)
+```
 ```markdown
 Syntax highlighted code block
 
