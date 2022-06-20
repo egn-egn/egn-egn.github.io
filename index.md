@@ -8,7 +8,7 @@ It's possible to create a custom-integration to send alerts to practically any p
 
 ### The Ambient
 
-I'm assuming that you already have Wazuh instaled and working. I'm working with a "All in one" installation in my kali vm, you can follow with any Linux distribution you like. If you are working with Wazuh distribud in clusters, you will have to replicate the entire configuration on all the node managers.
+I'm assuming that you already have Wazuh instaled and working. I'm working with a "All in one" installation in my kali vm, you can follow with any Linux distribution you like. If you are working with Wazuh distribud in clusters, you will have to replicate the entire configuration on all the node managers that you want the integration to work.
 
 ### Creating a webhook
 
