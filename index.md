@@ -15,12 +15,54 @@ The first thing to do is create a discord webhhok on **your** server chat
 - On "Integrations", click on "webhooks" to generate one
 - Save the webhook link for now
 ```
-Enter in the integrations folder of Wazuh. 
+
+### Creating the integration
+
+cd in to the Wazuh integrations folder.
+
+You should see the default integrations scritps. 
 ```markdown
 cd /var/ossec/integrations 
 ```
 ![](/docs/assets/images/01.png)
 
+As you can see that are two slack scritps, one in bash and the other in python, the reason for that is that the bash one will work like a launcher for the python script.
+
+Copy the both of them and name it to **custom-discord**
+```markdown
+cp slack custom-discord
+cp slack.py custom-discord.py
+```
+
+The **Slack's** scripts were made by the Wazuh team to integrate with Slack via webhook, we can modify them to work with Discord webhook instead. Practically the only modification needed for that to work is going to be the in the **slack.py** **generate_msg()** function.
+
+Before we talk code, i think it's good to understand how a integration is triggered and how you can control what types of alerts will trigger it.
+
+Open the configuration file the Wazuh manager **ossec.conf** 
+```markdown
+vim /var/ossec/etc/ossec.conf
+```
+
+This block of xml is what activates the integration, you will need to insert this on the configuration file of the Wazug manager, **ossec.conf**. You can insert in any place you like, just be careful to not put in the middle of another block.
+```markdown
+  <integration>
+    <name>custom-discord</name>
+    <hook_url>https://discord.com/api/webhooks/hook</hook_url>
+    <level>7</level>
+    <alert_format>json</alert_format>
+  </integration>
+``` 
+![](/docs/assets/images/02.png)
+The tag <name> will call the trigger script that will launch the python script. 
+In the line 357 i can control what will trigger the integration, in my case is any Wazuh alert that is equal or greater than 07.
+You can use the following options to trigger the alert:
+```markdown
+- <group>suricata,sysmon</group> Only the rules of the group suricata and sysmon will trigger the integration.
+- <level>12</level> Only rules greate or equal to 12 will trigger.
+- <rule_id>1299,1300</rule_id> Only this rules will trigger.
+```
+
+```
 ```markdown
 Syntax highlighted code block
 
