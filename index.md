@@ -29,6 +29,7 @@ cd /var/ossec/integrations
 As you can see, that are two slack scritps, one is in bash and the other in python, the reason for that is that the bash one will work like a launcher for the python script.
 
 Copy both of them and name it to **custom-discord**
+
 - all custom integrations scripts names need to start with **custom-**
 ```markdown
 cp slack custom-discord
