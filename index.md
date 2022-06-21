@@ -173,7 +173,7 @@ Create a file in /var/log named test.log
 ```bash
 touch /var/log/test.log
 ```
-Open the ossec.conf file again and navigate to the bottom, you should see a lot of *localfile* blocks, they indicate a path to a file that Wazuh will collect his logs from.
+Open the ossec.conf file again and navigate to the bottom, you should see a lot of **localfile** blocks, they indicate a path to a file that Wazuh will collect his logs from.
 
 Insert this block:
 ```xml
