@@ -81,7 +81,9 @@ This function will take an Wazuh alert as an argument and because the alerts are
 
 If you want to modify the contents of the alert, you will need to modify the fields in the **payload**
 
-I recommend that you check out Birdie repository [birdie0.github.io/discord-webhooks-guide/index.html](https://birdie0.github.io/discord-webhooks-guide/index.html) and explore to see if you like something different.
+I recommend that you check out Birdie repository [birdie0.github.io/discord-webhooks-guide/index.html](https://birdie0.github.io/discord-webhooks-guide/index.html) and explore to see if you will like something different for your alert.
+
+A good tool to help you with that is **Postman** https://www.postman.com/
 
 ```python
 def generate_msg(alert):
