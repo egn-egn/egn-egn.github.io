@@ -26,7 +26,7 @@ The first thing to do is create a discord webhhok on **your** server chat
 cd into the Wazuh integrations folder.
 
 You should see the default integrations scritps. 
-```markdown
+```bash
 cd /var/ossec/integrations 
 ```
 ![](/docs/assets/images/01.png)
@@ -36,7 +36,7 @@ As you can see, that are two slack scritps, one is in bash and the other in pyth
 Copy both of them and name it to **custom-discord**
 
 - all custom integrations scripts names need to start with **custom-**
-```markdown
+```bash
 cp slack custom-discord
 cp slack.py custom-discord.py
 ```
@@ -51,7 +51,7 @@ vim /var/ossec/etc/ossec.conf
 ```
 
 This block of xml is what activates the integration, you will need to insert this on the configuration file of the Wazug manager, **ossec.conf**. You can insert in any place you like, just be careful to not put in the middle of another block.
-```markdown
+```xml
   <integration>
     <name>custom-discord</name>
     <hook_url>https://discord.com/api/webhooks/hook</hook_url>
@@ -66,7 +66,7 @@ This block of xml is what activates the integration, you will need to insert thi
 - In the line 357 i can control what will trigger the integration, in my case is any Wazuh alert that is equal or greater than 07.
 
 You can use the following options to trigger the alert:
-```markdown
+```xml
 <group>suricata,sysmon</group> Only the rules of the group suricata and sysmon will trigger the integration.
 <level>12</level> Only rules greate or equal to 12 will trigger.
 <rule_id>1299,1300</rule_id> Only this rules will trigger.
@@ -83,7 +83,7 @@ If you want to modify the contents of the alert, you will need to modify the fie
 
 I recommned that you check out Birdie repository [birdie0.github.io/discord-webhooks-guide/structure/embed/color.html](https://birdie0.github.io/discord-webhooks-guide/index.html) and explore to see if you like something different.
 
-```
+```python
 def generate_msg(alert):
 
     level = alert['rule']['level']
@@ -138,7 +138,7 @@ The default path for integrations log are in;
 /var/ossec/logs/integrations.log
 ```
 You can control if you want logs or not with the variable **deb**
-```code
+```python
 def debug(msg):
         # debug log
         deb = True
@@ -150,7 +150,7 @@ def debug(msg):
             f.close()
 ```
 You will need to chance the scripts permissions and owners
-```
+```bash
 chmod 750 custom-*
 chown root:wazuh custom-*
 ```
@@ -170,18 +170,18 @@ touch /var/log/test.log
 Open the ossec.conf file again and navigate to the botton, you should see a lot of *localfile* blocks, they indicate a path to a file that Wazuh will collect his logs from.
 
 Insert this block
-```markdown
+```xml
   <localfile>
     <location>/var/log/test.log</location>
     <log_format>syslog</log_format>
   </localfile>
 ```
 Next, create a custom rule, you will need to open the file designed for that **local_rules.xml**
-```markdown
+```bash
 vim /var/ossec/etc/rules/local_rules.xml
 ```
 Insert this rule
-```markdown
+```xml
   <rule id="119999" level="12">
     <regex>^test$</regex>
     <description>Test rule to configure integration</description>
@@ -197,7 +197,7 @@ Run the binary and type the word test, you should see your rule getting iniciatt
 ![](/docs/assets/images/04.png)
 
 Restart the manager and trigger the alert, you should receive the alert on your Discord channel.
-```markdown
+```bash
 /var/ossec/bin/wazuh-control restart
 echo -e "test" /var/log/test.log
 ```
@@ -212,7 +212,7 @@ If you encounter problems, the files to look at are:
 - /var/ossec/logs/integration.log
 
 You can make the [integrator](https://documentation.wazuh.com/current/user-manual/reference/daemons/wazuh-integratord.html) daemon more verbose, for that execute with the *-d* flag or *-dd*
-```
+```bash
 /var/ossec/bin/wazuh-integratord  -d
 ```
 After that, the logs in ossec.log should be more verbose.
