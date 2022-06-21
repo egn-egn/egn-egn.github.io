@@ -170,7 +170,7 @@ pip3 install requests
 Everything should be ready now, but before we restart the Wazuh manager to activate the integration, I like to create a custom rule that I can manually trigger to test the integration.
 
 Create a file in /var/log named test.log
-```markdown
+```bash
 touch /var/log/test.log
 ```
 Open the ossec.conf file again and navigate to the bottom, you should see a lot of *localfile* blocks, they indicate a path to a file that Wazuh will collect his logs from.
