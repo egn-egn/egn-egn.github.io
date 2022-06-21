@@ -1,3 +1,3 @@
-theme: jekyll-theme-midnight
+theme: jekyll-theme-dinky
 title: Integrating Wazuh with Discord
 description: Integrating Wazuh with Discord to send alerts to a discord channel via webhook.
