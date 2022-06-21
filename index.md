@@ -41,11 +41,11 @@ cp slack custom-discord
 cp slack.py custom-discord.py
 ```
 
-The **Slack's** scripts were made by the Wazuh team to integrate with Slack via webhook, we can modify them to work with Discord webhook instead. Practically the only modification needed for that to work is going to be the in the **slack.py** **generate_msg()** function.
+The **Slack's** scripts were made by the Wazuh team to integrate with Slack via webhook, we can modify them to work with Discord webhook instead. Practically, the only modification needed for that to work is going to be the in the **slack.py** **generate_msg()** function.
 
 Before we talk code, i think it's good to understand how a integration is triggered and how you can control what types of alerts will trigger it.
 
-Open the configuration file the Wazuh manager **ossec.conf** 
+Open the configuration file of the Wazuh manager, **ossec.conf** 
 ```markdown
 vim /var/ossec/etc/ossec.conf
 ```
@@ -63,7 +63,7 @@ This block of xml is what activates the integration, you will need to insert thi
 
 - The tag **name** in the line 354 is where we define the name of the script that will launch the python script.
 - The tag **hook** is where you will need to place your webhook url.
-- In the line 357 i can control what will trigger the integration, in my case is any Wazuh alert that is equal or greater than 07.
+- In the line 356 i can control what will trigger the integration, in my case is any Wazuh alert that is equal or greater than 07.
 
 You can use the following options to trigger the alert:
 ```xml
@@ -77,29 +77,32 @@ You can use the following options to trigger the alert:
 After activating the integration, the next step would be customizing the custom-discord.py script.
 open the script with your favorite text editor, in the line **76** you can replace the **generate_msg()** function with the bellow function.
 
-This function will take an Wazuh alert as a argument and because the alerts are comming in json format, we just need to fill the values to send to discord. When i build this function, i used [Birdie0](https://github.com/Birdie0) repository to help me understand how disocord webhooks worked to build the format that i'm using.
+This function will take an Wazuh alert as a argument and because the alerts are comming in json format we just need to fill the values to send to Discord. When i build this function, i used [Birdie0](https://github.com/Birdie0) repository to help me understand how discord webhooks worked.
 
 If you want to modify the contents of the alert, you will need to modify the fields in the **payload**
 
-I recommned that you check out Birdie repository [birdie0.github.io/discord-webhooks-guide/structure/embed/color.html](https://birdie0.github.io/discord-webhooks-guide/index.html) and explore to see if you like something different.
+I recommned that you check out Birdie repository [birdie0.github.io/discord-webhooks-guide/index.html](https://birdie0.github.io/discord-webhooks-guide/index.html) and explore to see if you like something different.
 
 ```python
 def generate_msg(alert):
-
+	#save the rule level
     level = alert['rule']['level']
-
+    #compare rules level to set colors of the alert
     if (level <= 4):
+    	#green
         color = "3731970"
     elif (level >= 5 and level <= 12):
+        #yellow
         color = "15919874"
     else:
+        #red
         color = "15870466"
 
     if 'agentless' in alert:
         agent_ = 'agentless'
     else:
         agent_ = alert['agent']['name']
-
+    #data that the webhook will receive and use to display the alert in discord chat
     payload = json.dumps({
       "embeds": [
         {
