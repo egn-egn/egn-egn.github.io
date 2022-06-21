@@ -21,7 +21,7 @@ The first thing to do is create a discord webhhok on **your** server chat
 
 ### Creating the integration
 
-cd in to the Wazuh integrations folder.
+cd into the Wazuh integrations folder.
 
 You should see the default integrations scritps. 
 ```markdown
@@ -70,7 +70,142 @@ You can use the following options to trigger the alert:
 <rule_id>1299,1300</rule_id> Only this rules will trigger.
 ```
 
+### Customizing the script
+
+After activating the integration, the next step would be customizing the custom-discord.py script.
+open the script with your favorite text editor, in the line **76** you can replace the **generate_msg()** function and with the bellow function
+
+This function will take an Wazuh alert as a argument and because the alerts are comming in json format we just need to fill the values to send to discord, when i build this function, i used [Birdie0](https://github.com/Birdie0) repository to help me understando how it worked and build the format that i like.
+
+If you want to modify the contents of the alert, you need to modify the fields in the **payload**
+
+I recommned that you check out Birdie repository [birdie0.github.io/discord-webhooks-guide/structure/embed/color.html](https://birdie0.github.io/discord-webhooks-guide/structure/embed/color.html) and explore to see if you like something different.
+
+```markdown
+def generate_msg(alert):
+
+    level = alert['rule']['level']
+
+    if (level <= 4):
+        color = "3731970"
+    elif (level >= 5 and level <= 12):
+        color = "15919874"
+    else:
+        color = "15870466"
+
+    if 'agentless' in alert:
+        agent_ = 'agentless'
+    else:
+        agent_ = alert['agent']['name']
+
+    payload = json.dumps({
+      "embeds": [
+        {
+          "title": "Wazuh Alert - Rule {}".format(alert['rule']['id']),
+          "color": "{}".format(color),
+          "description": "{}".format(alert['rule']['description']),
+          "fields": [
+            {
+              "name": "Agent",
+              "value": "{}".format(agent_),
+              "inline": True
+            },
+            {
+              "name": "Location",
+              "value": "{}".format(alert['location']),
+              "inline": True
+            },
+            {
+            "name": "Rule Level",
+            "value": "{}".format(alert['rule']['level']),
+            "inline": True
+            }
+          ]
+        }
+      ]
+    })
+
+    return payload
 ```
+The alert format that this payload will generate in Discord:
+![](/docs/assets/images/03.png)
+
+I like to change the **debug()** function too, so i can control more freely when to save debug logs.
+The default path for integrations log are in;
+You can control that wi the variable **deb**
+```markdown
+/var/ossec/logs/integrations.log
+```
+```markdown
+def debug(msg):
+        # debug log
+        deb = True
+        if deb == True:
+            msg = "{0}: {1}\n".format(now, msg)
+            print(msg)
+            f = open(log_file, "a")
+            f.write(msg)
+            f.close()
+```
+You will need to chance the scripts permissions and owners
+```markdown
+chmod 750 custom-*
+chown root:wazuh custom-*
+```
+You will need te requests library, install it if you don't have it.
+```markdown
+pip3 install requests
+```
+
+### Creating a custom rule
+
+Everything should be ready now, but before we restart the Wazuh manager to activate the integration, i like to create a custom rule that i can manually trigger to test the integration.
+
+Create a file in /var/log named test.log
+```markdown
+touch /var/log/test.log
+```
+Open the ossec.conf file again and navigate to the botton, you should see a lot of *localfile* blocks, they indicate a path to a file that Wazuh will collect his logs from.
+
+Insert this block
+```markdown
+  <localfile>
+    <location>/var/log/test.log</location>
+    <log_format>syslog</log_format>
+  </localfile>
+```
+Next, create a custom rule, you will need to open the file designed for that **local_rules.xml**
+```markdown
+vim /var/ossec/etc/rules/local_rules.xml
+```
+Insert this rule
+```markdown
+  <rule id="119999" level="12">
+    <regex>^test$</regex>
+    <description>Test rule to configure integration</description>
+  </rule>
+```
+Now every time that you will echo the word **test** in **/var/log/test.log** the rule should trigger.
+To test that we can use the Binary that is exclusevely for that, **wazuh-logtest**
+
+Run the binary and type the word test, you should see your rule getting iniciatted.
+```markdown
+/var/ossec/bin/wazuh-logtest
+```
+![](/docs/assets/images/04.png)
+
+Restart the manager and trigger the alert, you should receive the alert on your Discord channel.
+```markdown
+/var/ossec/bin/wazuh-control restart
+echo -e "test" /var/log/test.log
+```
+And the Alert
+![](/docs/asstes/images/04.png)
+
+
+### Debugging
+
+
 ```markdown
 Syntax highlighted code block
 
