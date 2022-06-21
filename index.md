@@ -73,15 +73,15 @@ You can use the following options to trigger the alert:
 ### Customizing the script
 
 After activating the integration, the next step would be customizing the custom-discord.py script.
-open the script with your favorite text editor, in the line **76** you can replace the **generate_msg()** function and with the bellow function
+open the script with your favorite text editor, in the line **76** you can replace the **generate_msg()** function with the bellow function.
 
-This function will take an Wazuh alert as a argument and because the alerts are comming in json format we just need to fill the values to send to discord, when i build this function, i used [Birdie0](https://github.com/Birdie0) repository to help me understando how it worked and build the format that i like.
+This function will take an Wazuh alert as a argument and because the alerts are comming in json format, we just need to fill the values to send to discord. When i build this function, i used [Birdie0](https://github.com/Birdie0) repository to help me understand how disocord webhooks worked to build the format that i'm using.
 
-If you want to modify the contents of the alert, you need to modify the fields in the **payload**
+If you want to modify the contents of the alert, you will need to modify the fields in the **payload**
 
-I recommned that you check out Birdie repository [birdie0.github.io/discord-webhooks-guide/structure/embed/color.html](https://birdie0.github.io/discord-webhooks-guide/structure/embed/color.html) and explore to see if you like something different.
+I recommned that you check out Birdie repository [birdie0.github.io/discord-webhooks-guide/structure/embed/color.html](https://birdie0.github.io/discord-webhooks-guide/index.html) and explore to see if you like something different.
 
-```markdown
+```
 def generate_msg(alert):
 
     level = alert['rule']['level']
@@ -127,16 +127,16 @@ def generate_msg(alert):
 
     return payload
 ```
-The alert format that this payload will generate in Discord:
+This is the alert format:
 ![](/docs/assets/images/03.png)
 
 I like to change the **debug()** function too, so i can control more freely when to save debug logs.
 The default path for integrations log are in;
-You can control that wi the variable **deb**
-```markdown
+```
 /var/ossec/logs/integrations.log
 ```
-```markdown
+You can control if you want logs or not with the variable **deb**
+```code
 def debug(msg):
         # debug log
         deb = True
@@ -148,12 +148,12 @@ def debug(msg):
             f.close()
 ```
 You will need to chance the scripts permissions and owners
-```markdown
+```
 chmod 750 custom-*
 chown root:wazuh custom-*
 ```
 You will need te requests library, install it if you don't have it.
-```markdown
+```
 pip3 install requests
 ```
 
@@ -186,7 +186,7 @@ Insert this rule
   </rule>
 ```
 Now every time that you will echo the word **test** in **/var/log/test.log** the rule should trigger.
-To test that we can use the Binary that is exclusevely for that, **wazuh-logtest**
+To test that we can use the Binary that is exclusively for that, **wazuh-logtest**
 
 Run the binary and type the word test, you should see your rule getting iniciatted.
 ```markdown
@@ -200,13 +200,13 @@ Restart the manager and trigger the alert, you should receive the alert on your 
 echo -e "test" /var/log/test.log
 ```
 And the Alert
-![](/docs/asstes/images/04.png)
+![](/docs/asstes/images/05.png)
 
 
 ### Debugging
 
 
-```markdown
+```markd
 Syntax highlighted code block
 
 # Header 1
