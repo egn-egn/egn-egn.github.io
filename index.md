@@ -199,8 +199,8 @@ Restart the manager and trigger the alert, you should receive the alert on your 
 /var/ossec/bin/wazuh-control restart
 echo -e "test" /var/log/test.log
 ```
-And the Alert
-![](/docs/asstes/images/05.png)
+The alert in Discord
+![](/docs/assets/images/05.png)
 
 
 ### Debugging
