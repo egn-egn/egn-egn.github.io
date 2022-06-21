@@ -225,6 +225,8 @@ After that, the logs in ossec.log should be more verbose.
 
 ### Conclusion
 
+First I would like to offer my thanks to Alexandre Borges [@ale_sp_brazil](https://twitter.com/ale_sp_brazil) for incentivizing me to start writing this blog. You should definitely check his blog [exploitreversing.com](https://exploitreversing.com/)
+
 When I first needed to create a custom integration, I did not find much material talking about it, I hope that this can help someone.
 
-I also would like to offer my thanks to Alexandre Borges https://exploitreversing.com/ for incentivizing me to start writing this blog.
+
