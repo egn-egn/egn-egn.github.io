@@ -200,6 +200,7 @@ Restart the manager and trigger the alert, you should receive the alert on your 
 echo -e "test" /var/log/test.log
 ```
 The alert in Discord
+
 ![](/docs/assets/images/05.png)
 
 
