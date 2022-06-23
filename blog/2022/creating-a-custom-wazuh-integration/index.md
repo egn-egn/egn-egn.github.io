@@ -135,6 +135,7 @@ def generate_msg(alert):
     return payload
 ```
 This is the alert format:
+
 ![](/docs/assets/images/03.png)
 
 I like to change the **debug()** function too, so I can control more freely when to save debug logs.
