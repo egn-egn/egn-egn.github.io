@@ -1,3 +1,4 @@
+.
 # All Posts
 
 Jun 21, 2022
