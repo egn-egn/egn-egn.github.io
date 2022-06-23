@@ -1,5 +1,3 @@
-# Eugenio Chaves
-
 [Versão em Portugês](https://eugenio-chaves.github.io/blog/2022/wazuh-criando-uma-integracao-customizada)
 
 ### The Motive
