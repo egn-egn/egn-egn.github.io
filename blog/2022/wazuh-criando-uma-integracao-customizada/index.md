@@ -14,7 +14,7 @@ Eu estou assumindo que você já tem o Wazuh instalado e funcionando. No meu amb
 
 ### Criando o Webhook
 
-Á primeira coisa a se fazer é criar um webhook no chat do **seu** servidor de Discord
+A primeira coisa a se fazer é criar um webhook no chat do **seu** servidor de Discord
 ```markdown
 - Abra as configurações de seu servidor
 - Na aba "Integrações", clique em "webhooks" para gerar um
@@ -33,22 +33,22 @@ Como você pode ver, existem dois scritps do slack, um em bash e outro em python
 
 Copie os dois e passe o nome para **custom-discord**
 
-- todas as integrações customizadas do Wazuh precisam que o nome inicie com **custom-**
+- Todas as integrações customizadas do Wazuh precisam que o nome inicie com **custom-**
 ```bash
 cp slack custom-discord
 cp slack.py custom-discord.py
 ```
 
-The **Slack's** scripts were made by the Wazuh team to integrate with Slack via webhook, we can modify them to work with Discord webhook instead. Practically, the only modification needed for that to work is going to be the in the **slack.py** **generate_msg()** function.
+Os scritps do **Slack** foram feitos pelo time do Wazuh, para integrar com um canal de Slack via webhook, podemos modificar o script em python para integrar com o Discord. Para isso, a única modificação que será preciso fazer é na função **generate_msg()** dentro do script **slack.py**.
 
-Before we talk code, I think it's good to understand how an integration is triggered and how you can control what types of alerts will trigger it.
+Antes de começar, acredito que seria interessante demonstrar como uma integração é chamada e como você pode controlar que tipo de alertar iram iniciar ela.
 
-Open the configuration file of the Wazuh manager, **ossec.conf** 
+Abra o arquivo de configuração da manager do Wazuh **ossec.conf**
 ```markdown
 vim /var/ossec/etc/ossec.conf
 ```
 
-This block of xml is what activates the integration, you will need to insert this on the configuration file of the Wazuh manager, **ossec.conf**. You can insert in any place you like, just be careful to not put in the middle of another block.
+Esse bloco de xml é o que ativa a integração, você vai precisar colocar esse bloco no arquivo de configuração da manager do Wazuh, **ossec.conf**. Você pode colocar em qualquer posição dentro do arquivo, só tome cuidado para não inserir no meio de outro bloco.
 ```xml
   <integration>
     <name>custom-discord</name>
@@ -59,30 +59,30 @@ This block of xml is what activates the integration, you will need to insert thi
 ``` 
 ![](/docs/assets/images/02.png)
 
-- The tag **name** in the line 354 is where we define the name of the script that will launch the python script.
-- The tag **hook** is where you will need to place your webhook URL.
-- In the line 356 I can control what will trigger the integration, in my case is any Wazuh alert that is equal or greater than 07.
+- A Tag **name** na linha 354 é onde você define o nome do arquivo que irá executar o script em python.
+- A Tag **hook** é onde você deve inserir seu webhook.
+- Na linha 356 você pode controlar qual condição irá chamar a integração, no meu caso, qualquer alerta do Wazuh onde o nível seja maior o igual a 07.
 
-You can use the following options to trigger the alert:
+Você pode usar as seguintes condições para triggerar a integração:
 ```xml
 <group>suricata,sysmon</group> Only the rules of the group suricata and sysmon will trigger the integration.
 <level>12</level> Only rules greate or equal to 12 will trigger.
 <rule_id>1299,1300</rule_id> Only this rules will trigger.
 ```
 
-### Customizing The Script
+### Customizando o Script
 
-After activating the integration, the next step would be customizing the custom-discord.py script.
-open the script with your favorite text editor, in the line **76** you can replace the **generate_msg()** function with the bellow function.
+Após ativar a integração, o próximo passo seria customizar o script custom-discord.py
 
-This function will take an Wazuh alert as an argument and because the alerts are coming in json format we just need to fill the values to send to Discord. When I build this function, I used [Birdie0](https://github.com/Birdie0) repository to help me understand how discord webhooks worked.
+Abra o script com seu editor de texto favorito, na linha **76** você deve substituir a função **generate_msg()** do script com a abaixo;
 
-If you want to modify the contents of the alert, you will need to modify the fields in the **payload**
+Essa função irá pegar um alerta do Wazuh com argumento e como os alertas estão chegando em formato json, tudo que precisa ser feito é preencher os valores das chaves dentro do dicionário da função para o python transformar em json e enviar para o webhook do Discord.
 
-I recommend that you check out Birdie repository [birdie0.github.io/discord-webhooks-guide/index.html](https://birdie0.github.io/discord-webhooks-guide/index.html) and explore to see if you will like something different for your alert.
+Quando eu construí esse payload, usei o repositório do [Birdie0](https://github.com/Birdie0) para me ajudar a entender como customizar o que envio para o webhook do Discord.
 
-A good tool to help you with that is **Postman** https://www.postman.com/
+Eu recomendo que você cheque o repositório do Birdie [birdie0.github.io/discord-webhooks-guide/index.html](https://birdie0.github.io/discord-webhooks-guide/index.html) e tente achar se tem algum formato diferente que você gostaria de usar em seu alerta.
 
+Uma boa ferramenta para ajudar com isto é o **Postman** https://www.postman.com/
 ```python
 def generate_msg(alert):
 	#save the rule level
