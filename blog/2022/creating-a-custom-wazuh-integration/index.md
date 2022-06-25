@@ -10,11 +10,11 @@ It's possible to create a custom-integration to send alerts to practically any p
 
 ### The Ambient
 
-I'm assuming that you already have Wazuh installed and working. I'm working with a "All in one" installation in my kali VM, you can follow with any Linux distribution you like. If you are working with Wazuh distributed in clusters, you will have to replicate the entire configuration on all the node managers that you want the integration to work.
+I'm assuming that you already have Wazuh installed and working. I'm working with a "All in one" installation in my kali VM, you can follow with any Linux distribution you like. If you are working with Wazuh distributed in clusters, you will have to replicate this entire configuration on all the node managers that you want the integration to work.
 
 ### Creating a Webhook
 
-The first thing to do is create a discord webhhok on **your** server chat
+The first thing you need to do is create a discord webhook on **your** server chat
 ```markdown
 - Open your server settings
 - On "Integrations", click on "webhooks" to generate one
@@ -23,7 +23,7 @@ The first thing to do is create a discord webhhok on **your** server chat
 
 ### Creating The Integration
 
-cd into the Wazuh integrations folder.
+change directory into the Wazuh integrations folder.
 
 You should see the default integrations scritps. 
 ```bash
@@ -31,7 +31,7 @@ cd /var/ossec/integrations
 ```
 ![](/docs/assets/images/01.png)
 
-As you can see, that are two slack scritps, one is in bash and the other in python, the reason for that is that the bash one will work like a launcher for the python script.
+As you can see, that are two slack scritps, one is in bash and the other is in python, the reason for that is that the bash one will work like a launcher for the python script.
 
 Copy both of them and name it to **custom-discord**
 
@@ -41,16 +41,16 @@ cp slack custom-discord
 cp slack.py custom-discord.py
 ```
 
-The **Slack's** scripts were made by the Wazuh team to integrate with Slack via webhook, we can modify them to work with Discord webhook instead. Practically, the only modification needed for that to work is going to be the in the **slack.py** **generate_msg()** function.
+The **Slack's** scripts were made by the Wazuh team to integrate with Slack via webhook, we can modify them to work with Discord webhook instead. Practically, the only modification needed for that to work is going to be the in the **custom-discord.py** **generate_msg()** function.
 
-Before we talk code, I think it's good to understand how an integration is triggered and how you can control what types of alerts will trigger it.
+Before we continue, I think it's good to understand how an integration is triggered and how you can control what types of alerts will trigger it.
 
 Open the configuration file of the Wazuh manager, **ossec.conf** 
-```markdown
+```bash
 vim /var/ossec/etc/ossec.conf
 ```
 
-This block of xml is what activates the integration, you will need to insert this on the configuration file of the Wazuh manager, **ossec.conf**. You can insert in any place you like, just be careful to not put in the middle of another block.
+This block of xml is what activates the integration, you will need to insert this on the configuration file of the Wazuh manager, **ossec.conf**. You can insert in any place you like, just be careful to not put in the middle of another configuration block.
 ```xml
   <integration>
     <name>custom-discord</name>
@@ -75,9 +75,12 @@ You can use the following options to trigger the alert:
 ### Customizing The Script
 
 After activating the integration, the next step would be customizing the custom-discord.py script.
-open the script with your favorite text editor, in the line **76** you can replace the **generate_msg()** function with the bellow function.
 
-This function will take an Wazuh alert as an argument and because the alerts are coming in json format we just need to fill the values to send to Discord. When I build this function, I used [Birdie0](https://github.com/Birdie0) repository to help me understand how discord webhooks worked.
+Open the script with your favorite text editor, in the line **76** you can replace the **generate_msg()** function with the bellow function.
+
+This function will take an Wazuh alert as an argument and because the alerts are coming in json format, we just need to fill the values of the keys in the dictionary and then send the payload to Discord.
+
+When I build this function, I used [Birdie0](https://github.com/Birdie0) repository to help me understand how discord webhooks worked.
 
 If you want to modify the contents of the alert, you will need to modify the fields in the **payload**
 
@@ -138,9 +141,9 @@ This is the alert format:
 
 ![](/docs/assets/images/03.png)
 
-I like to change the **debug()** function too, so I can control more freely when to save debug logs.
+I also like to change the **debug()** function, so I can control more freely when to save debug logs.
 
-The default path for integrations log is in.
+The default path for the integrations log file is.
 ```
 /var/ossec/logs/integrations.log
 ```
@@ -161,8 +164,8 @@ You will need to chance the scripts permissions and owners:
 chmod 750 custom-*
 chown root:wazuh custom-*
 ```
-You will need the requests library, install it if you don't have it.
-```
+You will need the requests library.
+```bash
 pip3 install requests
 ```
 
@@ -174,7 +177,7 @@ Create a file in /var/log named test.log
 ```bash
 touch /var/log/test.log
 ```
-Open the ossec.conf file again and navigate to the bottom, you should see a lot of **localfile** blocks, they indicate a path to a file that Wazuh will collect his logs from.
+Open the ossec.conf file again and navigate to the bottom, you should see a lot of **localfile** blocks, they indicate a path to a file that Wazuh will collect logs from.
 
 Insert this block:
 ```xml
@@ -183,7 +186,7 @@ Insert this block:
     <log_format>syslog</log_format>
   </localfile>
 ```
-Next, create a custom rule, you will need to open the file designed for that **local_rules.xml**
+Next, create a custom rule, you will need to open the file designed for that, **local_rules.xml**.
 ```bash
 vim /var/ossec/etc/rules/local_rules.xml
 ```
@@ -197,8 +200,8 @@ Insert this rule:
 Now every time that you will echo the word **test** in **/var/log/test.log** the rule should trigger.
 To test that we can use the Binary that is exclusively for that, **wazuh-logtest**
 
-Run the binary and type the word test, you should see your rule getting initiated.
-```markdown
+Run the binary and type the word **test**, you should see your rule getting triggered.
+```bash
 /var/ossec/bin/wazuh-logtest
 ```
 ![](/docs/assets/images/04.png)
@@ -222,7 +225,7 @@ You can make the [integrator](https://documentation.wazuh.com/current/user-manua
 ```bash
 /var/ossec/bin/wazuh-integratord  -d
 ```
-After that, the logs in ossec.log should be more verbose.
+After that, the logs related to the integration should be more verbose in ossec.log, you should see the entire flow of execution of the integration.
 
 ### Conclusion
 
