@@ -6,11 +6,11 @@ No futuro, eu quero monitorar meu ambiente e minha rede doméstica com Wazuh int
 
 Eu poderia usar as integrações prontas do Wazuh, como a do [Slack](https://documentation.wazuh.com/current/proof-of-concept-guide/poc-integrate-slack.html), por exemplo. Decidi usar o Discord porque é um aplicativo que uso praticamente o dia todo e um exemplo perfeito para demonstrar como criar uma integração customizada do Wazuh com apps externos.
 
-É possível criar uma integração customizada para enviar alertas para qualquer lugar que tenha um webhook ou alguma forma de receber dados via POST requests. Como Microsoft Teams, por exemplo.
+É possível criar uma integração customizada do Wazuh para enviar seus alertas para qualquer lugar que tenha um webhook ou alguma forma de receber dados via POST requests. Como Microsoft Teams, por exemplo.
 
 ### O Ambiente
 
-Eu estou assumindo que você já tem o Wazuh instalado e funcionando. No meu ambiente atual, estou com uma instalação "All in One" na minha VM kali, você pode seguir com qualquer distribuição Linux que quiser. Se você estiver usando o Wazuh distribuído em clusters, irá precisar replicar toda esta configuração nas managers onde você queira que a integração funcione.
+Eu estou assumindo que você já esteja com o Wazuh instalado e funcionando. Em meu ambiente atual, estou com uma instalação "All in One" na minha VM kali, você pode seguir com qualquer distribuição Linux que quiser. Se você estiver usando o Wazuh distribuído em clusters, irá precisar replicar toda esta configuração nas managers onde você queira que a integração funcione.
 
 ### Criando o Webhook
 
@@ -39,16 +39,16 @@ cp slack custom-discord
 cp slack.py custom-discord.py
 ```
 
-Os scritps do **Slack** foram feitos pelo time do Wazuh, para integrar com um canal de Slack via webhook, podemos modificar o script em python para integrar com o Discord. Para isso, a única modificação que será preciso fazer é na função **generate_msg()** dentro do script **slack.py**.
+Os scritps do **Slack** foram feitos pelo time do Wazuh para integrar com um canal de Slack via webhook, podemos modificar o script em python para integrar com o Discord. Para isso, a única modificação que será preciso fazer é na função **generate_msg()** dentro do script **custom-discord.py**.
 
-Antes de começar, acredito que seria interessante demonstrar como uma integração é chamada e como você pode controlar que tipo de alertar iram iniciar ela.
+Antes de começar, acredito que seria interessante demonstrar como uma integração é chamada e como você pode controlar quais os tipos de alertas do Wazuh que podem disparar a integração.
 
 Abra o arquivo de configuração da manager do Wazuh **ossec.conf**
-```markdown
+```bash
 vim /var/ossec/etc/ossec.conf
 ```
 
-Esse bloco de xml é o que ativa a integração, você vai precisar colocar esse bloco no arquivo de configuração da manager do Wazuh, **ossec.conf**. Você pode colocar em qualquer posição dentro do arquivo, só tome cuidado para não inserir no meio de outro bloco.
+Este bloco de xml é o que ativa a integração, você vai precisar colocar esse bloco no arquivo de configuração da manager do Wazuh, **ossec.conf**. Você pode colocar em qualquer posição dentro do arquivo, só tome cuidado para não inserir no meio de um bloco de outra configuração.
 ```xml
   <integration>
     <name>custom-discord</name>
@@ -61,24 +61,24 @@ Esse bloco de xml é o que ativa a integração, você vai precisar colocar esse
 
 - A Tag **name** na linha 354 é onde você define o nome do arquivo que irá executar o script em python.
 - A Tag **hook** é onde você deve inserir seu webhook.
-- Na linha 356 você pode controlar qual condição irá chamar a integração, no meu caso, qualquer alerta do Wazuh onde o nível seja maior o igual a 07.
+- Na linha 356, você pode controlar qual condição irá chamar a integração, no meu caso, qualquer alerta do Wazuh onde o nível seja maior o igual a 07.
 
-Você pode usar as seguintes condições para triggerar a integração:
+Você pode usar as seguintes condições para disparar a integração:
 ```xml
-<group>suricata,sysmon</group> Only the rules of the group suricata and sysmon will trigger the integration.
-<level>12</level> Only rules greate or equal to 12 will trigger.
-<rule_id>1299,1300</rule_id> Only this rules will trigger.
+<group>suricata,sysmon</group> Somente as regras desses grupos vão disparar a integração.
+<level>12</level> Somente regras de nível igual ou maior que 12 irão disparar a integração.
+<rule_id>1299,1300</rule_id> Somente as regras com esses IDs irão irão disparar a integração.
 ```
 
 ### Customizando o Script
 
 Após ativar a integração, o próximo passo seria customizar o script custom-discord.py
 
-Abra o script com seu editor de texto favorito, na linha **76** você deve substituir a função **generate_msg()** do script com a abaixo;
+Abra o script com seu editor de texto favorito, na linha **76** você deve substituir a função **generate_msg()** do script com a função abaixo;
 
-Essa função irá pegar um alerta do Wazuh com argumento e como os alertas estão chegando em formato json, tudo que precisa ser feito é preencher os valores das chaves dentro do dicionário da função para o python transformar em json e enviar para o webhook do Discord.
+Essa função irá pegar um alerta do Wazuh como argumento e como os alertas estão chegando em formato json, tudo que precisa ser feito é preencher os valores das chaves dentro do dicionário da função para o python transformar em json e enviar para o webhook do Discord.
 
-Quando eu construí esse payload, usei o repositório do [Birdie0](https://github.com/Birdie0) para me ajudar a entender como customizar o que envio para o webhook do Discord.
+Quando eu construí esse payload, usei o repositório do [Birdie0](https://github.com/Birdie0) para me ajudar a entender como customizar o que posso enviar para o webhook do Discord.
 
 Eu recomendo que você cheque o repositório do Birdie [birdie0.github.io/discord-webhooks-guide/index.html](https://birdie0.github.io/discord-webhooks-guide/index.html) e tente achar se tem algum formato diferente que você gostaria de usar em seu alerta.
 
@@ -132,13 +132,13 @@ def generate_msg(alert):
 
     return payload
 ```
-Esse é o formato do alerta:
+Este é o formato do alerta:
 
 ![](/docs/assets/images/03.png)
 
-Eu também gosto de alterar a função**debug()**, com isso consigo controlar mais livremente os logs do script.
+Eu também gosto de alterar a função **debug()**, com isso consigo controlar mais livremente os logs do script.
 
-O caminho completo para o arquivo de logs é esse:
+O caminho completo para o arquivo de logs é este:
 ```
 /var/ossec/logs/integrations.log
 ```
@@ -160,7 +160,7 @@ chmod 750 custom-*
 chown root:wazuh custom-*
 ```
 Você também vai precisar do módulo requests:
-```
+```bash
 pip3 install requests
 ```
 
@@ -168,7 +168,7 @@ pip3 install requests
 
 Tudo deve estar pronto agora, mas antes de reiniciar a manager do Wazuh e ativar a integração, eu gosto de criar uma regra onde eu posso ativar ela manualmente para testar a integração.
 
-Crie um arquivo no diretório /var/log chamado test.log
+Crie um arquivo no diretório **/var/log** chamado **test.log**
 ```bash
 touch /var/log/test.log
 ```
@@ -181,13 +181,13 @@ Insira esse bloco no final do arquivo:
     <log_format>syslog</log_format>
   </localfile>
 ```
-Agora, crie uma regra custom, você vai precisar abrir o arquivo apropriado, **local_rules.xml**
+Agora crie uma regra, você vai precisar abrir o arquivo apropriado, **local_rules.xml**
 
-Criando sua regra nesse arquivo ela não será perdida durante um update do Wazuh.
+Criando sua regra nesse arquivo ela não será perdida durante um futuro update do Wazuh.
 ```bash
 vim /var/ossec/etc/rules/local_rules.xml
 ```
-Acrescente esta regra:
+Acrescente a seguinte regra no arquivo e salve ele:
 ```xml
   <rule id="119999" level="12">
     <regex>^test$</regex>
@@ -198,14 +198,14 @@ Agora, sempre que você inserir a palavra **test** no arquivo **/var/log/test.lo
 
 Para testar a regra, existe o binário que é exclusivo para isso, **wazuh-logtest**
 
-Rode o binário e digite a palavra **test**, você deve ver sua regra sendo disparada.
-```markdown
+Rode o binário e digite a palavra **test**, você deverá ver sua regra sendo disparada.
+```bash
 /var/ossec/bin/wazuh-logtest
 ```
 
 ![](/docs/assets/images/04.png)
 
-Reinicie a manager e dispare o alerta, você deve receber um alerta no chat do seu servidor do Discord.
+Reinicie a manager e dispare o alerta, você deverá receber um alerta no chat do seu servidor do Discord.
 ```bash
 /var/ossec/bin/wazuh-control restart
 echo -e "test" /var/log/test.log
@@ -228,7 +228,7 @@ Depois disso, os logs no arquivo ossec.log relacionados a integração devem tra
 
 ### Conclusão
 
-Primeiramente eu quero agradecer ao Alexandre Borges [@ale_sp_brazil](https://twitter.com/ale_sp_brazil) por me incentivar a iniciar este blog. Você definitivamente deveria checar o blog dele exploitreversing.com](https://exploitreversing.com/)
+Primeiramente eu quero agradecer ao Alexandre Borges [@ale_sp_brazil](https://twitter.com/ale_sp_brazil) por me incentivar a iniciar este blog. Você definitivamente deveria checar o blog dele [exploitreversing.com](https://exploitreversing.com/)
 
 A primeira vez que precisei criar uma integração customizada, não achei muitos materiais disponíveis falando a respeito deste assunto, espero que isso possa ajudar alguém.
 
