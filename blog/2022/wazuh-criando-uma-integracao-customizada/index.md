@@ -132,16 +132,17 @@ def generate_msg(alert):
 
     return payload
 ```
-This is the alert format:
+Esse é o formato do alerta:
+
 ![](/docs/assets/images/03.png)
 
-I like to change the **debug()** function too, so I can control more freely when to save debug logs.
+Eu também gosto de alterar a função**debug()**, com isso consigo controlar mais livremente os logs do script.
 
-The default path for integrations log is in.
+O caminho completo para o arquivo de logs é esse:
 ```
 /var/ossec/logs/integrations.log
 ```
-You can control if you want logs or not with the variable **deb**
+Você pode ativar e desativar os logs com a função **deb**
 ```python
 def debug(msg):
         # debug log
@@ -153,78 +154,82 @@ def debug(msg):
             f.write(msg)
             f.close()
 ```
-You will need to chance the scripts permissions and owners:
+Você deve alterar as permissões e owners dos arquivos:
 ```bash
 chmod 750 custom-*
 chown root:wazuh custom-*
 ```
-You will need the requests library, install it if you don't have it.
+Você também vai precisar do módulo requests:
 ```
 pip3 install requests
 ```
 
-### Creating A Custom Rule
+### Criando uma Regra Customizada
 
-Everything should be ready now, but before we restart the Wazuh manager to activate the integration, I like to create a custom rule that I can manually trigger to test the integration.
+Tudo deve estar pronto agora, mas antes de reiniciar a manager do Wazuh e ativar a integração, eu gosto de criar uma regra onde eu posso ativar ela manualmente para testar a integração.
 
-Create a file in /var/log named test.log
+Crie um arquivo no diretório /var/log chamado test.log
 ```bash
 touch /var/log/test.log
 ```
-Open the ossec.conf file again and navigate to the bottom, you should see a lot of **localfile** blocks, they indicate a path to a file that Wazuh will collect his logs from.
+Abra o arquivo ossec,conf novamente e vá para o final do arquivo, você deve ver vários blocos com o nome de **localfile**, eles indicam um arquivo onde o Wazuh irá coletar logs.
 
-Insert this block:
+Insira esse bloco no final do arquivo:
 ```xml
   <localfile>
     <location>/var/log/test.log</location>
     <log_format>syslog</log_format>
   </localfile>
 ```
-Next, create a custom rule, you will need to open the file designed for that **local_rules.xml**
+Agora, crie uma regra custom, você vai precisar abrir o arquivo apropriado, **local_rules.xml**
+
+Criando sua regra nesse arquivo ela não será perdida durante um update do Wazuh.
 ```bash
 vim /var/ossec/etc/rules/local_rules.xml
 ```
-Insert this rule:
+Acrescente esta regra:
 ```xml
   <rule id="119999" level="12">
     <regex>^test$</regex>
     <description>Test rule to configure integration</description>
   </rule>
 ```
-Now every time that you will echo the word **test** in **/var/log/test.log** the rule should trigger.
-To test that we can use the Binary that is exclusively for that, **wazuh-logtest**
+Agora, sempre que você inserir a palavra **test** no arquivo **/var/log/test.log** a regra deve ser disparada, como minha trigger da integração é qualquer regra maior ou igual a 07, isso será o suficiente para testar a integração;
 
-Run the binary and type the word test, you should see your rule getting initiated.
+Para testar a regra, existe o binário que é exclusivo para isso, **wazuh-logtest**
+
+Rode o binário e digite a palavra **test**, você deve ver sua regra sendo disparada.
 ```markdown
 /var/ossec/bin/wazuh-logtest
 ```
+
 ![](/docs/assets/images/04.png)
 
-Restart the manager and trigger the alert, you should receive the alert on your Discord channel.
+Reinicie a manager e dispare o alerta, você deve receber um alerta no chat do seu servidor do Discord.
 ```bash
 /var/ossec/bin/wazuh-control restart
 echo -e "test" /var/log/test.log
 ```
-The alert in Discord:
+O alerta no Discord:
 
 ![](/docs/assets/images/05.png)
 
-### Debugging
+### Debugando
 
-If you encounter problems, the files to look at are:
+Se encontrar problema, os arquivos de logs que podem ajudar são: 
 - /var/ossec/logs/ossec.log
 - /var/ossec/logs/integration.log
 
-You can make the [integrator](https://documentation.wazuh.com/current/user-manual/reference/daemons/wazuh-integratord.html) daemon more verbose, for that execute with the flag **-d** or **-dd**
+Você também pode fazer o daemon [integrator](https://documentation.wazuh.com/current/user-manual/reference/daemons/wazuh-integratord.html) mais verboso para ajudar com o debugging, para isso, execute ele com a flag **-d** ou **-dd**
 ```bash
 /var/ossec/bin/wazuh-integratord  -d
 ```
-After that, the logs in ossec.log should be more verbose.
+Depois disso, os logs no arquivo ossec.log relacionados a integração devem trazer mais informações, ele deverá mostrar todo seu fluxo de execução.
 
-### Conclusion
+### Conclusão
 
-First I would like to offer my thanks to Alexandre Borges [@ale_sp_brazil](https://twitter.com/ale_sp_brazil) for incentivizing me to start writing this blog. You should definitely check his blog [exploitreversing.com](https://exploitreversing.com/)
+Primeiramente eu quero agradecer ao Alexandre Borges [@ale_sp_brazil](https://twitter.com/ale_sp_brazil) por me incentivar a iniciar este blog. Você definitivamente deveria checar o blog dele exploitreversing.com](https://exploitreversing.com/)
 
-When I first needed to create a custom integration, I did not find much material talking about it, I hope that this can help someone.
+A primeira vez que precisei criar uma integração customizada, não achei muitos materiais disponíveis falando a respeito deste assunto, espero que isso possa ajudar alguém.
 
-[Top](https://eugenio-chaves.github.io/blog/2022/wazuh-criando-uma-integracao-customizada)
+[Topo](https://eugenio-chaves.github.io/blog/2022/wazuh-criando-uma-integracao-customizada)
