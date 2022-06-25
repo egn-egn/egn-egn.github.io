@@ -1,8 +1,10 @@
 [English version](https://eugenio-chaves.github.io/blog/2022/creating-a-custom-wazuh-integration)
 
+## Integrando Wazuh com Discord
+
 ### O Motivo
 
-No futuro, eu quero monitorar meu ambiente e minha rede doméstica com Wazuh integrado com Suricata e tudo isso funcionando em uma Raspberry pi 4. Também quero uma forma fácil para visualizar os alertas que o Wazuh irá gerar.
+No futuro, eu quero monitorar minha rede doméstica e o resto do meu ambiente com Wazuh integrado com Suricata. Também quero uma forma fácil para visualizar os alertas que o Wazuh irá gerar.
 
 Eu poderia usar as integrações prontas do Wazuh, como a do [Slack](https://documentation.wazuh.com/current/proof-of-concept-guide/poc-integrate-slack.html), por exemplo. Decidi usar o Discord porque é um aplicativo que uso praticamente o dia todo e um exemplo perfeito para demonstrar como criar uma integração customizada do Wazuh com apps externos.
 
