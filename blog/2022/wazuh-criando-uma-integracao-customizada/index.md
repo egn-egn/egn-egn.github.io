@@ -76,7 +76,7 @@ Após ativar a integração, o próximo passo seria customizar o script custom-d
 
 Abra o script com seu editor de texto favorito, na linha **76** você deve substituir a função **generate_msg()** do script com a função abaixo;
 
-Essa função irá pegar um alerta do Wazuh como argumento e como os alertas estão chegando em formato json, tudo que precisa ser feito é preencher os valores das chaves dentro do dicionário da função para o python transformar em json e enviar para o webhook do Discord.
+Essa função irá pegar um alerta do Wazuh como argumento e como os alertas estão chegando em formato json, tudo que precisa ser feito é preencher os valores das chaves dentro do dicionário da função e enviar para o webhook do Discord.
 
 Quando eu construí esse payload, usei o repositório do [Birdie0](https://github.com/Birdie0) para me ajudar a entender como customizar o que posso enviar para o webhook do Discord.
 
