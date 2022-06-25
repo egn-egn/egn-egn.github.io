@@ -17,13 +17,13 @@ Eu estou assumindo que você já tem o Wazuh instalado e funcionando. No meu amb
 Á primeira coisa a se fazer é criar um webhook no chat do **seu** servidor de Discord
 ```markdown
 - Abra as configurações de seu servidor
-- Na aba "Integrações", clica em "webhooks" e gere um
+- Na aba "Integrações", clique em "webhooks" para gerar um
 - Salve o link por enquanto
 ```
 
 ### Criando a Integração
 
-Entre na pasta de integração do Wazuh. Você deve ver os scripts de integrações padrões do Wazuh 
+Entre na pasta de integração do Wazuh. Você deve ver os scripts de integrações padrões
 ```bash
 cd /var/ossec/integrations 
 ```
