@@ -10,17 +10,17 @@ The "Packages" module allows you to see which packages are installed on the agen
 
 ![](/docs/assets/images/PacotesInterface.png)
 
-The problem with this interface would be collecting package information from all agents in the environment, you would have to query agent by agent. The API provides a method to do this collection all at once. To do this, I will be using a python script, after the collection, the script will consolidate the data from all the agents in a csv file.
+The problem with this interface would be collecting package's information from all agents on the environment, you would have to query agent by agent. The API provides a method to do this collection all at once. To do this, I will be using a python script, after the collection, the script will consolidate the data from all the agents in a csv file.
 
 
 ### How The Script Will Work
 
 The API has multiples [endpoints](https://documentation.wazuh.com/current/user-manual/api/reference.html)
 
-I will follow the following process for collection with the script:
+I will follow the following process for collecting [Packages](https://documentation.wazuh.com/current/user-manual/api/reference.html#operation/api.controllers.syscollector_controller.get_packages_info) information with the script:
 
 1. Send a request to the endpoint **/agents** asking for agent information and save the response in a variable. This information will include important data such as the agent's name and id.
-2. The response will be returned in json format, the script will manipulate the API response to collect the agent ID.
+2. The response will be returned in json format. (the script will manipulate the API response to collect the agent ID)
 3. Create a loop to go through all the IDs returned by the API.
 4. For each returned ID, make a new call, but this time to the desired endpoint, in this case the **/packages** passing the agent ID, this way I will be requesting package information from all agents
 5. Manipulate the output to have the information on the screen or save it in a file.
@@ -44,11 +44,11 @@ import urllib3
 protocol = 'https'
 host = '192.168.100.38'
 port = '55000'
-user = '' #usuário API
-password = '' # senha API
+user = '' #API user
+password = '' #API password
 output_filename = 'packages.csv'
 
-# Variáveis
+# Auth Variables
 base_url = f'{protocol}://{host}:{port}'
 login_url = f'{base_url}/security/user/authenticate'
 basic_auth = f'{user}:{password}'.encode()
@@ -72,7 +72,7 @@ def get_response(url, headers, verify=False):
 def write_csv(data):
     try:
         with open(join(output_filename), 'w', encoding="utf-8", newline='') as outfile:
-            #Declarar cabeçalhos de csv
+            #Here we can declare the csv headers
             writer = csv.DictWriter(outfile, fieldnames=['agent_name', 'scan_time', 'version','vendor','format','name','architecture','section','description','install_time','size'])
             writer.writeheader()
             for row in data:
