@@ -31,7 +31,7 @@ irei seguir o seguinte processo para a coleta com o script:
 O script está em Python, mas este processo pode ser feito com qualquer linguagem.
 
 <details>
-<summary>Spoiler warning</summary>
+<summary>Show Script</summary>
     
 ```python
 #!/usr/bin/env python3
@@ -146,7 +146,7 @@ def main():
 if __name__ == '__main__':
     main()
 ```
-  
+</details>  
 
 ### Conclusão
 
