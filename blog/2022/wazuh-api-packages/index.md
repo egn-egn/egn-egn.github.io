@@ -77,10 +77,10 @@ def write_csv(data):
             writer.writeheader()
             for row in data:
                 writer.writerow(row)
-        print(f'\nReporte criado "{join(output_filename)}".')
+        print(f'\nReport criado "{join(output_filename)}".')
     except Exception as e:
         print(f'Seguinte erro encontrado na criação do csv {join(output_filename)}: {e}. ')
-        response = input('Deseja printar o reporte? [y/n]: ')
+        response = input('Deseja printar o Report? [y/n]: ')
         if response == 'y':
             print(data)
             pass
@@ -149,4 +149,3 @@ if __name__ == '__main__':
 Como mencionado antes, esse mesmo método pode ser usado para varios endpoints da API do Wazuh, é muito util para coletar o de vulnerabilidades também.
 
 [Top](https://eugenio-chaves.github.io/blog/2022/wazuh-api-packages)
-```
