@@ -29,9 +29,6 @@ irei seguir o seguinte processo para a coleta com o script:
 ### Script de Coleta
 
 O script está em Python, mas este processo pode ser feito com qualquer linguagem.
-
-<details>
-<summary>Show Script</summary>
     
 ```python
 #!/usr/bin/env python3
@@ -146,11 +143,10 @@ def main():
 if __name__ == '__main__':
     main()
 ```
-</details>  
 
 ### Conclusão
 
-Como falei acima, esse mesmo método pode ser repetido para varios endpoints da API, é muito util para coletar o de vulnerabilidades também.
+Como mencionado antes, esse mesmo método pode ser usado para varios endpoints da API do Wazuh, é muito util para coletar o de vulnerabilidades também.
 
 [Top](https://eugenio-chaves.github.io/blog/2022/wazuh-api-packages)
 ```
