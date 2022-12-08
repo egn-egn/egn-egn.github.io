@@ -7,3 +7,5 @@ Jun 25, 2022
 Dez 12, 2022
 
 [Wazuh API - Coletando Pacotes Instalados no ambiente com Python](https://eugenio-chaves.github.io/blog/2022/wazuh-api-packages)
+
+[Wazuh API - Collecting Installed Packages from all Wazuh Agents with Python](https://eugenio-chaves.github.io/blog/2022/wazuh-api-packages-en-us)

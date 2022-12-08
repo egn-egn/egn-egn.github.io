@@ -1,34 +1,34 @@
-[Versão em Inglês](https://eugenio-chaves.github.io/blog/2022/wazuh-api-packages-en-us)
+[Versão em Português](https://eugenio-chaves.github.io/blog/2022/wazuh-api-packages)
 
 ## Wazuh API - Packages
 
-### Módulo Packages
+### Packages Module
 
-O Wazuh vem com uma API RESTful instalada em sua controladora, servindo na porta 55000. Além da comunicação interna com a Dashboard, um dos principais beneficios da API é coletar informações sobre multiplos agentes de uma forma conjunta, o que ainda não é possivel para a maiorias dos módulos do Wazuh através de sua dashboard.
+Wazuh already has a RESTful API in the Manager, serving on port 55000. Besides the internal communication with the Dashboard, one of the main benefits of the API is to collect information about multiple agents all at once, which is not yet possible for most Wazuh modules through the dashboard.
 
-O módulo "Packages" permite que você veja quais pacotes estão instalados no sistema operacional do agente.
+The "Packages" module allows you to see which packages are installed on the agent's operating system.
 
 ![](/docs/assets/images/PacotesInterface.png)
 
-O problema dessa interface seria a coleta de todos os agentes do ambiente, seria preciso consultar agente por agente. A API proporciona um método para fazer esta coleta de uma vez só. Para fazer isso, estarei usando um script em python, após a coleta, o script irá consolidar os dados de todos os agents em um arquivo csv.
+The problem with this interface would be collecting package information from all agents in the environment, you would have to query agent by agent. The API provides a method to do this collection all at once. To do this, I will be using a python script, after the collection, the script will consolidate the data from all the agents in a csv file.
 
 
-### Como Funciona
+### How The Script Will Work
 
-A API proporciona diversos [endpoints](https://documentation.wazuh.com/current/user-manual/api/reference.html)
+The API has multiples [endpoints](https://documentation.wazuh.com/current/user-manual/api/reference.html)
 
-irei seguir o seguinte processo para a coleta com o script:
+I will follow the following process for collection with the script:
 
-1. Mandar uma requisição para o endpoint **/agents** solicitando informações dos agentes e salvar a resposta em uma variável. Nesta informação estará inclusos dados importantes como o nome e id do agente.
-2. A resposta será retornada no formato json, desta forma sera preciso manipular a resposta da API para podermos coletar o ID de agente retornado.
-3. Criar um loop para passar por todos os IDs retornados pela API.
-4. Para cada ID retornado, fazer uma nova chamada, mas desta vez para o endpoint desejado, neste caso o **/packages** passando o ID do agente, desta forma eu estarei solicitando informaçoes de pacotes de todos os agentes
-5. Manipular a saida para ter a informação na tela ou salvar em um documento.
+1. Send a request to the endpoint **/agents** asking for agent information and save the response in a variable. This information will include important data such as the agent's name and id.
+2. The response will be returned in json format, the script will manipulate the API response to collect the agent ID.
+3. Create a loop to go through all the IDs returned by the API.
+4. For each returned ID, make a new call, but this time to the desired endpoint, in this case the **/packages** passing the agent ID, this way I will be requesting package information from all agents
+5. Manipulate the output to have the information on the screen or save it in a file.
 
 
-### Script de Coleta
+### Script
 
-O script está em Python, mas este processo pode ser feito com qualquer linguagem.
+The script is in Python, but this process can be done with any other language.
     
 ```python
 #!/usr/bin/env python3
@@ -36,11 +36,11 @@ import json
 from base64 import b64encode
 from os.path import join
 import csv
-import requests  #pip3 install requests caso não tenha esta lib instalada
+import requests  #pip3 install requests
 import urllib3
 
 
-# Configuração da Manager do Wazuh
+# Configurating the manager variables
 protocol = 'https'
 host = '192.168.100.38'
 port = '55000'
@@ -54,11 +54,11 @@ login_url = f'{base_url}/security/user/authenticate'
 basic_auth = f'{user}:{password}'.encode()
 headers = {'Authorization': f'Basic {b64encode(basic_auth).decode()}'}
 
-# Desabilitar avisos de conexão https insegura (para casos de certificados auto-assinados)
+# Disable https warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-# Fazer chamadas para os endpoints
+# Function to send requests
 def get_response(url, headers, verify=False):
     """Get API result"""
     request_result = requests.get(url, headers=headers, verify=verify)
@@ -66,9 +66,9 @@ def get_response(url, headers, verify=False):
     if request_result.status_code == 200:
         return json.loads(request_result.content.decode())
     else:
-        raise Exception(f'Erro durante a requisição: {request_result.json()}')
+        raise Exception(f'Error during request: {request_result.json()}')
 
-# Gerar o documento csv
+# Function to create a csv file
 def write_csv(data):
     try:
         with open(join(output_filename), 'w', encoding="utf-8", newline='') as outfile:
@@ -77,48 +77,48 @@ def write_csv(data):
             writer.writeheader()
             for row in data:
                 writer.writerow(row)
-        print(f'\nReport criado "{join(output_filename)}".')
+        print(f'\n "{join(output_filename)}".')
     except Exception as e:
-        print(f'Seguinte erro encontrado na criação do csv {join(output_filename)}: {e}. ')
-        response = input('Deseja printar o Report? [y/n]: ')
+        print(f'Found the following error during file creation {join(output_filename)}: {e}. ')
+        response = input('Want to print the Report? [y/n]: ')
         if response == 'y':
             print(data)
             pass
         else:
-            print('Saindo...')
+            print('Exiting...')
 
 
 def main():
-    result = [] #salvar dados coletados da API
+    result = [] #variable to temporarily save the API response
     headers['Authorization'] = f'Bearer {get_response(login_url, headers)["data"]["token"]}'
 
     # Request
     agents = get_response(base_url + '/agents?wait_for_complete=true&select=name&select=status&limit=100000', headers)
     if agents['data']['total_affected_items'] == 0:
-        print(f'Nenhum agente encontrado: \n{agents}')
+        print(f'No agents found: \n{agents}')
         exit(0)
 
-    #Loop em todos os agentes
+    #Loop in all agents
     for agent_data in agents['data']['affected_items']:
         if agent_data['status'] == 'never_connected':
-            print(f'Agente "{agent_data["name"]}" esta com o status "never_connected" não sendo possível coletar seus pacotes.'
+            print(f'Agent "{agent_data["name"]}" is with the status "never_connected".'
                   f'Skipping...')
             continue
 
-        #Realizar a chamada no endpoint packages
+        #Calling the Packages endpoint
         try:
             packages = get_response(
                 base_url + f'/syscollector/{agent_data["id"]}/packages?limit=100000',
                 headers
             )
         except Exception:
-            print(f'Não foi possível coletar informações do agente {agent_data["name"]} ({agent_data["id"]}). '
+            print(f'Error collecting data for the following agent {agent_data["name"]} ({agent_data["id"]}). '
                 f'Skipping...')
             continue
 
         for package in packages['data']['affected_items']:
             if agent_data['status'] == 'never_connected':
-                print(f'Agente "{agent_data["name"]} esta com o status "never_connected" não sendo possível coletar informações de seus pacotes')
+                print(f'Agent "{agent_data["name"]} is with the status "never_connected".')
                 continue
    
             try:
@@ -135,7 +135,7 @@ def main():
                                 'size': package.get('size', 'unknown')}                        
                             for package in packages['data']['affected_items']])
             except Exception as e:
-                    print(f'Erro encontrado durante o parsing do agente "{agent_data["name"]}": {e}. Skipping...')
+                    print(f'Error during the parsing for the following "{agent_data["name"]}": {e}. Skipping...')
     else:
         pass
     write_csv(result)
@@ -144,8 +144,8 @@ if __name__ == '__main__':
     main()
 ```
 
-### Conclusão
+### Conclusion
 
-Como mencionado antes, esse mesmo método pode ser usado para varios endpoints da API do Wazuh, é muito util para coletar o de vulnerabilidades também.
+As mentioned before, this same method can be used for several Wazuh API endpoints, and is very useful for collecting vulnerability information as well.
 
 [Top](https://eugenio-chaves.github.io/blog/2022/wazuh-api-packages)
